@@ -43,8 +43,7 @@ export function GuessList({ guesses, invalidGuess }: GuessListProps) {
                 <div>
                   <p className="guess-row__word">{guess.word}</p>
                   <p className="guess-row__meta">
-                    cosine {guess.similarity.toFixed(3)} ·{' '}
-                    {new Date(guess.submittedAt).toLocaleTimeString()}
+                    closeness {guess.score}/100 · {new Date(guess.submittedAt).toLocaleTimeString()}
                   </p>
                 </div>
                 <div className="guess-row__score">
