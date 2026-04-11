@@ -5,6 +5,13 @@ export type VectorDatasetEntry = {
 
 export type VectorDataset = Record<string, VectorDatasetEntry>
 
+export type WordCatalog = {
+  version: string
+  updatedAt: string
+  dailyWords: string[]
+  practiceWords: string[]
+}
+
 export type DailyTarget = {
   puzzleId: string
   puzzleNumber: number
@@ -23,6 +30,7 @@ export type WorkerRequest =
       type: 'initDataset'
       requestId: string
       datasetUrl: string
+      catalogUrl?: string
     }
   | {
       type: 'resolveDailyTarget'
@@ -56,6 +64,8 @@ export type WorkerResponse =
       type: 'initialized'
       requestId: string
       wordCount: number
+      playableWordCount: number
+      catalogVersion: string
     }
   | {
       type: 'targetResolved'

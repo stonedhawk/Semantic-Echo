@@ -70,10 +70,11 @@ export class VectorWorkerClient {
     })
   }
 
-  async init(datasetUrl: string) {
+  async init(datasetUrl: string, catalogUrl?: string) {
     const response = await this.dispatch({
       type: 'initDataset',
       datasetUrl,
+      catalogUrl,
     } satisfies Omit<InitRequest, 'requestId'>)
 
     if (response.type === 'error') {
@@ -84,7 +85,11 @@ export class VectorWorkerClient {
       throw new Error('Unexpected worker response while loading the dataset.')
     }
 
-    return response.wordCount
+    return {
+      wordCount: response.wordCount,
+      playableWordCount: response.playableWordCount,
+      catalogVersion: response.catalogVersion,
+    }
   }
 
   async resolveDailyTarget(puzzleId: string, puzzleNumber: number) {

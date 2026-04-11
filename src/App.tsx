@@ -76,44 +76,47 @@ function SemanticEchoApp() {
 
   const loadPracticeRound = useCallback(
     async (practiceRound: number, practiceKey = createPracticeKey(practiceRound)) => {
-    if (!workerRef.current) {
-      return
-    }
+      if (!workerRef.current) {
+        return
+      }
 
-    dispatch(
-      setSessionContext({
-        mode: 'practice',
-        puzzleId: practiceKey,
-        puzzleNumber: practiceRound,
-        practiceRound,
-        practiceKey,
-      }),
-    )
-    dispatch(setStatus('loading'))
-    await workerRef.current.resolvePracticeTarget(practiceRound, practiceKey)
-    dispatch(setTargetResolved())
+      dispatch(
+        setSessionContext({
+          mode: 'practice',
+          puzzleId: practiceKey,
+          puzzleNumber: practiceRound,
+          practiceRound,
+          practiceKey,
+        }),
+      )
+      dispatch(setStatus('loading'))
+      await workerRef.current.resolvePracticeTarget(practiceRound, practiceKey)
+      dispatch(setTargetResolved())
 
-    const persisted = readPersistedState('practice')
+      const persisted = readPersistedState('practice')
 
-    if (persisted && persisted.puzzleId === practiceKey) {
-      dispatch(hydrateSession(persisted))
-      return
-    }
+      if (persisted && persisted.puzzleId === practiceKey) {
+        dispatch(hydrateSession(persisted))
+        return
+      }
 
-    const starterHint = await workerRef.current.requestHint(1)
-    dispatch(addHint(starterHint))
-  }, [dispatch])
+      const starterHint = await workerRef.current.requestHint(1)
+      dispatch(addHint(starterHint))
+    },
+    [dispatch],
+  )
 
   useEffect(() => {
     const worker = new VectorWorkerClient()
     const datasetUrl = new URL('./data/vectors.json', import.meta.url).toString()
+    const catalogUrl = new URL('./data/wordCatalog.json', import.meta.url).toString()
     workerRef.current = worker
     dispatch(setStatus('loading'))
 
     void (async () => {
       try {
-        const wordCount = await worker.init(datasetUrl)
-        dispatch(setWorkerReady({ wordCount }))
+        const bootSummary = await worker.init(datasetUrl, catalogUrl)
+        dispatch(setWorkerReady(bootSummary))
         const practiceSession = readPersistedState('practice')
 
         if (practiceSession && !practiceSession.completed) {
@@ -247,7 +250,7 @@ function SemanticEchoApp() {
       <TopBar
         mode={game.mode}
         puzzleNumber={game.puzzleNumber}
-        wordCount={game.datasetWordCount}
+        playableWordCount={game.playableWordCount}
         ready={game.workerReady && game.targetResolved}
       />
 
