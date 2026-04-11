@@ -53,4 +53,5 @@ npm run dev
 
 ## Deploying
 
-This repo includes a GitHub Pages workflow. Once Pages is enabled to use GitHub Actions, every push to `main` will publish the latest build.
+The project is configured to work well on GitHub Pages with the Vite base path set to `/Semantic-Echo/`.
+To publish from the repository itself, build the app and copy the output into `docs/`, then enable GitHub Pages to serve from the `main` branch `/docs` folder.
