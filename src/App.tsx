@@ -106,6 +106,16 @@ function SemanticEchoApp() {
       try {
         const wordCount = await worker.init(datasetUrl)
         dispatch(setWorkerReady({ wordCount }))
+        const practiceSession = readPersistedState('practice')
+
+        if (practiceSession && !practiceSession.completed) {
+          await loadPracticeRound(
+            practiceSession.practiceRound,
+            practiceSession.practiceKey ?? practiceSession.puzzleId,
+          )
+          return
+        }
+
         await loadDailyRound()
       } catch (error) {
         dispatch(
@@ -119,7 +129,7 @@ function SemanticEchoApp() {
     return () => {
       worker.dispose()
     }
-  }, [dispatch, loadDailyRound])
+  }, [dispatch, loadDailyRound, loadPracticeRound])
 
   async function submitGuess() {
     if (!workerRef.current) {
@@ -141,11 +151,18 @@ function SemanticEchoApp() {
 
     try {
       const result = await workerRef.current.scoreGuess(guess)
+      const activeHintCap =
+        game.hintHistory.length > 0
+          ? game.hintHistory[game.hintHistory.length - 1].maxReachableScore
+          : 100
+      const visibleScore = result.exact
+        ? 100
+        : Math.min(result.score, activeHintCap)
 
       dispatch(
         recordGuess({
           word: result.guess,
-          score: result.score,
+          score: visibleScore,
           similarity: result.similarity,
           exact: result.exact,
           submittedAt: new Date().toISOString(),
