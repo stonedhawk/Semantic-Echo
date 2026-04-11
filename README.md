@@ -9,6 +9,7 @@ Semantic Echo is a daily browser word game where you guess a hidden word and get
 - A heat bar and trend panel show whether you are getting closer.
 - Hints build slowly, so they help without instantly giving the game away.
 - Practice mode lets you jump into fresh random words after you finish a round.
+- A catalog layer now decides which words are playable, so a future backend can refresh the pool without rewriting the game loop.
 
 ## How to play
 
@@ -44,12 +45,14 @@ npm run dev
 - `src/workers/*`: hidden-word logic, scoring, hints, and practice-word selection
 - `src/components/*`: main game UI, controls, and HUD
 - `src/data/vectors.json`: shipped word list and vector data
+- `src/data/wordCatalog.json`: curated playable word pool used by daily and practice mode
 
 ## Notes for contributors
 
 - The game uses a worker so the hidden word and scoring logic stay outside the React UI.
 - `src/data/vectors.json` is treated as a black box during agent work.
 - Practice mode is separate from the daily puzzle so the shared daily word stays intact.
+- The worker now selects targets from `wordCatalog.json`, which mirrors the shape a future dictionary service can return.
 
 ## Deploying
 

@@ -3,11 +3,16 @@ import { Activity, Binary, Radar } from 'lucide-react'
 type TopBarProps = {
   mode: 'daily' | 'practice'
   puzzleNumber: number
-  wordCount: number
+  playableWordCount: number
   ready: boolean
 }
 
-export function TopBar({ mode, puzzleNumber, wordCount, ready }: TopBarProps) {
+export function TopBar({
+  mode,
+  puzzleNumber,
+  playableWordCount,
+  ready,
+}: TopBarProps) {
   return (
     <header className="panel top-bar">
       <div>
@@ -26,7 +31,7 @@ export function TopBar({ mode, puzzleNumber, wordCount, ready }: TopBarProps) {
         </div>
         <div className="metric-chip">
           <Binary size={15} />
-          <span>{wordCount} words</span>
+          <span>{playableWordCount} live words</span>
         </div>
         <div className={`metric-chip ${ready ? 'metric-chip--ready' : ''}`}>
           <Activity size={15} />

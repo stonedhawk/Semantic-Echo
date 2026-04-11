@@ -35,6 +35,8 @@ export type GameState = PersistedGameState & {
   status: 'booting' | 'loading' | 'ready' | 'scoring' | 'error'
   workerReady: boolean
   datasetWordCount: number
+  playableWordCount: number
+  catalogVersion: string | null
   targetResolved: boolean
   errorMessage: string | null
 }
@@ -59,6 +61,8 @@ const initialState: GameState = {
   status: 'booting',
   workerReady: false,
   datasetWordCount: 0,
+  playableWordCount: 0,
+  catalogVersion: null,
   targetResolved: false,
   errorMessage: null,
 }
@@ -153,9 +157,18 @@ const gameSlice = createSlice({
     setStatus(state, action: PayloadAction<GameState['status']>) {
       state.status = action.payload
     },
-    setWorkerReady(state, action: PayloadAction<{ wordCount: number }>) {
+    setWorkerReady(
+      state,
+      action: PayloadAction<{
+        wordCount: number
+        playableWordCount: number
+        catalogVersion: string
+      }>,
+    ) {
       state.workerReady = true
       state.datasetWordCount = action.payload.wordCount
+      state.playableWordCount = action.payload.playableWordCount
+      state.catalogVersion = action.payload.catalogVersion
       state.errorMessage = null
     },
     setTargetResolved(state) {

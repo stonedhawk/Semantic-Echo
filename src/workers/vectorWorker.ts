@@ -3,6 +3,7 @@
 import type {
   DailyTarget,
   HintPayload,
+  WordCatalog,
   VectorDataset,
   VectorDatasetEntry,
   WorkerRequest,
@@ -11,6 +12,8 @@ import type {
 
 let datasetEntries: VectorDataset = {}
 let knownWords: string[] = []
+let dailyWordPool: string[] = []
+let practiceWordPool: string[] = []
 let target: DailyTarget | null = null
 let targetEntry: VectorDatasetEntry | null = null
 
@@ -103,6 +106,48 @@ function buildHint(targetWord: string, cluster: string, level: number): HintPayl
   }
 }
 
+function uniqueKnownWords(words: string[]) {
+  return [...new Set(words.map((word) => word.toLowerCase().trim()))].filter(
+    (word) => Boolean(datasetEntries[word]),
+  )
+}
+
+function buildFallbackCatalog(): WordCatalog {
+  return {
+    version: 'embedded-fallback',
+    updatedAt: new Date().toISOString(),
+    dailyWords: knownWords,
+    practiceWords: knownWords,
+  }
+}
+
+async function loadCatalog(catalogUrl?: string) {
+  if (!catalogUrl) {
+    return buildFallbackCatalog()
+  }
+
+  try {
+    const response = await fetch(catalogUrl)
+
+    if (!response.ok) {
+      return buildFallbackCatalog()
+    }
+
+    const catalog = (await response.json()) as WordCatalog
+    const dailyWords = uniqueKnownWords(catalog.dailyWords ?? [])
+    const practiceWords = uniqueKnownWords(catalog.practiceWords ?? [])
+
+    return {
+      version: catalog.version || 'embedded-fallback',
+      updatedAt: catalog.updatedAt || new Date().toISOString(),
+      dailyWords: dailyWords.length > 0 ? dailyWords : knownWords,
+      practiceWords: practiceWords.length > 0 ? practiceWords : knownWords,
+    } satisfies WordCatalog
+  } catch {
+    return buildFallbackCatalog()
+  }
+}
+
 function post(message: WorkerResponse) {
   self.postMessage(message)
 }
@@ -117,11 +162,16 @@ self.onmessage = async (event: MessageEvent<WorkerRequest>) => {
 
       datasetEntries = json
       knownWords = Object.keys(datasetEntries)
+      const catalog = await loadCatalog(message.catalogUrl)
+      dailyWordPool = catalog.dailyWords
+      practiceWordPool = catalog.practiceWords
 
       post({
         type: 'initialized',
         requestId: message.requestId,
         wordCount: knownWords.length,
+        playableWordCount: new Set([...dailyWordPool, ...practiceWordPool]).size,
+        catalogVersion: catalog.version,
       })
     } catch {
       post({
@@ -144,13 +194,13 @@ self.onmessage = async (event: MessageEvent<WorkerRequest>) => {
       return
     }
 
-    const targetIndex = hashPuzzleId(message.puzzleId) % knownWords.length
-    const targetWord = knownWords[targetIndex]
+    const dailyTargetIndex = hashPuzzleId(message.puzzleId) % dailyWordPool.length
+    const targetWord = dailyWordPool[dailyTargetIndex]
 
     target = {
       puzzleId: message.puzzleId,
       puzzleNumber: message.puzzleNumber,
-      targetIndex,
+      targetIndex: dailyTargetIndex,
       targetWord,
     }
     targetEntry = datasetEntries[targetWord]
@@ -174,13 +224,13 @@ self.onmessage = async (event: MessageEvent<WorkerRequest>) => {
     }
 
     const puzzleId = message.practiceKey
-    const targetIndex = hashPuzzleId(puzzleId) % knownWords.length
-    const targetWord = knownWords[targetIndex]
+    const practiceTargetIndex = hashPuzzleId(puzzleId) % practiceWordPool.length
+    const targetWord = practiceWordPool[practiceTargetIndex]
 
     target = {
       puzzleId,
       puzzleNumber: message.practiceRound,
-      targetIndex,
+      targetIndex: practiceTargetIndex,
       targetWord,
     }
     targetEntry = datasetEntries[targetWord]
