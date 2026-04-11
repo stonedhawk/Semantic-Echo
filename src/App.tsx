@@ -67,7 +67,11 @@ function SemanticEchoApp() {
 
     if (persisted && persisted.puzzleId === puzzle.puzzleId) {
       dispatch(hydrateSession(persisted))
+      return
     }
+
+    const starterHint = await workerRef.current.requestHint(1)
+    dispatch(addHint(starterHint))
   }, [dispatch])
 
   const loadPracticeRound = useCallback(
@@ -93,7 +97,11 @@ function SemanticEchoApp() {
 
     if (persisted && persisted.puzzleId === practiceKey) {
       dispatch(hydrateSession(persisted))
+      return
     }
+
+    const starterHint = await workerRef.current.requestHint(1)
+    dispatch(addHint(starterHint))
   }, [dispatch])
 
   useEffect(() => {
