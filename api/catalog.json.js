@@ -1,18 +1,18 @@
 import {
+  catalogPath,
   createJsonResponse,
   createOptionsResponse,
   readJsonFile,
-  suggestionsPath,
-} from './_lib/catalog'
+} from './_lib/catalog.js'
 
 export async function GET() {
   try {
-    const suggestions = await readJsonFile(suggestionsPath)
-    return createJsonResponse(suggestions)
+    const catalog = await readJsonFile(catalogPath)
+    return createJsonResponse(catalog)
   } catch {
     return createJsonResponse(
       {
-        error: 'Catalog suggestions unavailable. Run `npm run catalog:suggest` first.',
+        error: 'Catalog unavailable. Run `npm run catalog:build` first.',
       },
       500,
     )
