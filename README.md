@@ -66,6 +66,30 @@ VITE_WORD_CATALOG_URL=https://your-domain.example/catalog.json
 
 If the remote catalog is unavailable, the game falls back to the bundled `src/data/wordCatalog.json` file automatically. The top bar shows whether the current word pool came from the live feed, the bundled catalog, or the final built-in fallback.
 
+## Catalog pipeline
+
+The playable catalog is now generated from a curated seed file instead of being edited by hand.
+
+- `catalog/wordCatalog.seed.json`: human-edited buckets of candidate daily and practice words
+- `scripts/build-word-catalog.mjs`: validates the seed against `src/data/vectors.json`
+- `src/data/wordCatalog.json`: frontend fallback catalog generated from the seed
+- `server/data/wordCatalog.json`: backend-served catalog generated from the same seed
+
+Useful commands:
+
+```bash
+npm run catalog:build
+npm run catalog:serve
+```
+
+The local catalog service serves:
+
+```text
+http://127.0.0.1:8787/api/catalog.json
+```
+
+That endpoint already matches the contract the frontend expects through `VITE_WORD_CATALOG_URL`.
+
 ## Deploying
 
 The project is configured to work well on GitHub Pages with the Vite base path set to `/Semantic-Echo/`.
