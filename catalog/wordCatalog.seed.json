@@ -1,0 +1,27 @@
+{
+  "version": "catalog-seed-v2",
+  "dailyBuckets": {
+    "nature": ["forest", "tree", "river", "mountain", "valley", "flower", "root"],
+    "animals": ["wolf", "fox", "falcon", "lion", "rabbit", "whale", "eagle"],
+    "cities": ["city", "bridge", "tower", "subway", "market", "station", "harbor"],
+    "emotions": ["joy", "calm", "fear", "hope", "wonder", "trust", "love"],
+    "science": ["quantum", "atom", "theory", "neuron", "logic", "vector", "energy"],
+    "music": ["song", "melody", "rhythm", "chorus", "piano", "drum", "harmony"],
+    "food": ["bread", "apple", "soup", "coffee", "olive", "berry", "pasta"],
+    "weather": ["storm", "cloud", "rain", "snow", "wind", "breeze", "sunlight"],
+    "technology": ["server", "browser", "network", "kernel", "cipher", "robot", "compiler"],
+    "space": ["planet", "orbit", "galaxy", "rocket", "comet", "nebula", "eclipse"]
+  },
+  "practiceBuckets": {
+    "nature": ["forest", "leaf", "meadow", "field", "branch"],
+    "animals": ["otter", "tiger", "horse", "shark", "panda"],
+    "cities": ["street", "plaza", "alley", "avenue"],
+    "emotions": ["grief", "anger", "guilt", "pride", "envy"],
+    "science": ["signal", "matrix", "proof", "system", "method"],
+    "music": ["violin", "tempo", "lyric", "singer", "concert"],
+    "food": ["spice", "cheese", "honey", "cocoa", "salad"],
+    "weather": ["thunder", "frost", "mist", "monsoon", "climate"],
+    "technology": ["packet", "sensor", "socket", "engine", "signaler"],
+    "space": ["asteroid", "cosmos", "satellite", "lunar", "stellar"]
+  }
+}

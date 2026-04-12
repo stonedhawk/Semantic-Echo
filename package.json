@@ -5,7 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "prebuild": "npm run catalog:build",
     "build": "tsc -b && vite build",
+    "catalog:build": "node scripts/build-word-catalog.mjs",
+    "catalog:serve": "node server/catalog-server.mjs",
     "lint": "eslint .",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit"
