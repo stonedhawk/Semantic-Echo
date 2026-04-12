@@ -1,11 +1,8 @@
 {
-  "generatedAt": "2026-04-12T12:13:05.420Z",
+  "generatedAt": "2026-04-12T12:18:38.656Z",
   "dictionaryPath": "/usr/share/dict/words",
-  "suggestionCount": 2,
+  "suggestionCount": 1,
   "suggestionsByCluster": {
-    "nature": [
-      "stone"
-    ],
     "cities": [
       "traffic"
     ]
