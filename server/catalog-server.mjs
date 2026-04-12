@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const catalogPath = path.join(__dirname, 'data/wordCatalog.json')
+const suggestionsPath = path.join(__dirname, 'data/wordCatalogSuggestions.json')
 const port = Number(process.env.PORT || 8787)
 
 function sendJson(response, statusCode, payload) {
@@ -43,6 +44,18 @@ const server = createServer(async (request, response) => {
     } catch {
       sendJson(response, 500, {
         error: 'Catalog unavailable. Run `npm run catalog:build` first.',
+      })
+    }
+    return
+  }
+
+  if (request.method === 'GET' && url.pathname === '/api/catalog-suggestions.json') {
+    try {
+      const suggestions = JSON.parse(await readFile(suggestionsPath, 'utf8'))
+      sendJson(response, 200, suggestions)
+    } catch {
+      sendJson(response, 500, {
+        error: 'Catalog suggestions unavailable. Run `npm run catalog:suggest` first.',
       })
     }
     return
