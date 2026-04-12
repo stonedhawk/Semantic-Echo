@@ -58,6 +58,12 @@ npm run dev
 
 The app can optionally load a fresher playable-word catalog from a backend endpoint.
 
+By default, the game now points at the live Vercel catalog API:
+
+```text
+https://semantic-echo-catalog.vercel.app/api/catalog.json
+```
+
 Set:
 
 ```bash
@@ -108,10 +114,10 @@ The repo now includes Vercel-ready API routes in `api/` for:
 - `/api/health`
 
 On Vercel, the frontend build switches to `/` automatically, while GitHub Pages still uses `/Semantic-Echo/`.
-If you keep the game frontend on GitHub Pages and deploy only the live catalog to Vercel, set `VITE_WORD_CATALOG_URL` in the Pages-facing frontend build to your Vercel API URL, for example:
+If you want to override the default live catalog, set `VITE_WORD_CATALOG_URL` in the frontend build, for example:
 
 ```bash
-VITE_WORD_CATALOG_URL=https://semantic-echo-api.vercel.app/api/catalog.json
+VITE_WORD_CATALOG_URL=https://semantic-echo-catalog.vercel.app/api/catalog.json
 ```
 
 ## Deploying
