@@ -8,6 +8,7 @@ import { GuessList } from './components/GuessList'
 import { TopBar } from './components/TopBar'
 import { TrajectoryHUD } from './components/TrajectoryHUD'
 import { useGlobalKeyboard } from './hooks/useGlobalKeyboard'
+import { getRemoteCatalogUrl } from './lib/catalogSource'
 import { getDailyPuzzleContext } from './lib/dailySeed'
 import {
   addHint,
@@ -109,13 +110,18 @@ function SemanticEchoApp() {
   useEffect(() => {
     const worker = new VectorWorkerClient()
     const datasetUrl = new URL('./data/vectors.json', import.meta.url).toString()
-    const catalogUrl = new URL('./data/wordCatalog.json', import.meta.url).toString()
+    const localCatalogUrl = new URL('./data/wordCatalog.json', import.meta.url).toString()
+    const remoteCatalogUrl = getRemoteCatalogUrl()
     workerRef.current = worker
     dispatch(setStatus('loading'))
 
     void (async () => {
       try {
-        const bootSummary = await worker.init(datasetUrl, catalogUrl)
+        const bootSummary = await worker.init(
+          datasetUrl,
+          localCatalogUrl,
+          remoteCatalogUrl ?? undefined,
+        )
         dispatch(setWorkerReady(bootSummary))
         const practiceSession = readPersistedState('practice')
 
@@ -251,6 +257,7 @@ function SemanticEchoApp() {
         mode={game.mode}
         puzzleNumber={game.puzzleNumber}
         playableWordCount={game.playableWordCount}
+        catalogSource={game.catalogSource}
         ready={game.workerReady && game.targetResolved}
       />
 

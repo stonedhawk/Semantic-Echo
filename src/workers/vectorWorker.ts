@@ -1,6 +1,7 @@
 /// <reference lib="webworker" />
 
 import type {
+  CatalogSource,
   DailyTarget,
   HintPayload,
   WordCatalog,
@@ -121,30 +122,56 @@ function buildFallbackCatalog(): WordCatalog {
   }
 }
 
-async function loadCatalog(catalogUrl?: string) {
-  if (!catalogUrl) {
-    return buildFallbackCatalog()
-  }
+function normalizeCatalog(catalog: WordCatalog) {
+  const dailyWords = uniqueKnownWords(catalog.dailyWords ?? [])
+  const practiceWords = uniqueKnownWords(catalog.practiceWords ?? [])
 
+  return {
+    version: catalog.version || 'embedded-fallback',
+    updatedAt: catalog.updatedAt || new Date().toISOString(),
+    dailyWords: dailyWords.length > 0 ? dailyWords : knownWords,
+    practiceWords: practiceWords.length > 0 ? practiceWords : knownWords,
+  } satisfies WordCatalog
+}
+
+async function loadCatalogFromUrl(url: string): Promise<WordCatalog | null> {
   try {
-    const response = await fetch(catalogUrl)
+    const response = await fetch(url)
 
     if (!response.ok) {
-      return buildFallbackCatalog()
+      return null
     }
 
     const catalog = (await response.json()) as WordCatalog
-    const dailyWords = uniqueKnownWords(catalog.dailyWords ?? [])
-    const practiceWords = uniqueKnownWords(catalog.practiceWords ?? [])
-
-    return {
-      version: catalog.version || 'embedded-fallback',
-      updatedAt: catalog.updatedAt || new Date().toISOString(),
-      dailyWords: dailyWords.length > 0 ? dailyWords : knownWords,
-      practiceWords: practiceWords.length > 0 ? practiceWords : knownWords,
-    } satisfies WordCatalog
+    return normalizeCatalog(catalog)
   } catch {
-    return buildFallbackCatalog()
+    return null
+  }
+}
+
+async function loadCatalog(
+  remoteCatalogUrl?: string,
+  localCatalogUrl?: string,
+): Promise<{ catalog: WordCatalog; source: CatalogSource }> {
+  if (remoteCatalogUrl) {
+    const remoteCatalog = await loadCatalogFromUrl(remoteCatalogUrl)
+
+    if (remoteCatalog) {
+      return { catalog: remoteCatalog, source: 'remote' }
+    }
+  }
+
+  if (localCatalogUrl) {
+    const localCatalog = await loadCatalogFromUrl(localCatalogUrl)
+
+    if (localCatalog) {
+      return { catalog: localCatalog, source: 'local' }
+    }
+  }
+
+  return {
+    catalog: buildFallbackCatalog(),
+    source: 'embedded-fallback',
   }
 }
 
@@ -162,7 +189,10 @@ self.onmessage = async (event: MessageEvent<WorkerRequest>) => {
 
       datasetEntries = json
       knownWords = Object.keys(datasetEntries)
-      const catalog = await loadCatalog(message.catalogUrl)
+      const { catalog, source } = await loadCatalog(
+        message.remoteCatalogUrl,
+        message.localCatalogUrl,
+      )
       dailyWordPool = catalog.dailyWords
       practiceWordPool = catalog.practiceWords
 
@@ -172,6 +202,7 @@ self.onmessage = async (event: MessageEvent<WorkerRequest>) => {
         wordCount: knownWords.length,
         playableWordCount: new Set([...dailyWordPool, ...practiceWordPool]).size,
         catalogVersion: catalog.version,
+        catalogSource: source,
       })
     } catch {
       post({

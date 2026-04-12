@@ -54,6 +54,18 @@ npm run dev
 - Practice mode is separate from the daily puzzle so the shared daily word stays intact.
 - The worker now selects targets from `wordCatalog.json`, which mirrors the shape a future dictionary service can return.
 
+## Remote catalog setup
+
+The app can optionally load a fresher playable-word catalog from a backend endpoint.
+
+Set:
+
+```bash
+VITE_WORD_CATALOG_URL=https://your-domain.example/catalog.json
+```
+
+If the remote catalog is unavailable, the game falls back to the bundled `src/data/wordCatalog.json` file automatically. The top bar shows whether the current word pool came from the live feed, the bundled catalog, or the final built-in fallback.
+
 ## Deploying
 
 The project is configured to work well on GitHub Pages with the Vite base path set to `/Semantic-Echo/`.
