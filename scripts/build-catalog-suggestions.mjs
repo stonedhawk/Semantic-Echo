@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import { access, mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -22,12 +22,28 @@ function normalizeDictionaryEntries(entries) {
   )
 }
 
+async function loadDictionary(fallbackWords) {
+  try {
+    await access(dictionaryPath)
+
+    return {
+      entries: normalizeDictionaryEntries(
+        (await readFile(dictionaryPath, 'utf8')).split(/\r?\n/),
+      ),
+      source: dictionaryPath,
+    }
+  } catch {
+    return {
+      entries: new Set(fallbackWords),
+      source: 'vector-dataset-fallback',
+    }
+  }
+}
+
 async function main() {
   const vectors = JSON.parse(await readFile(vectorsPath, 'utf8'))
   const seed = JSON.parse(await readFile(seedPath, 'utf8'))
-  const dictionary = normalizeDictionaryEntries(
-    (await readFile(dictionaryPath, 'utf8')).split(/\r?\n/),
-  )
+  const dictionary = await loadDictionary(Object.keys(vectors))
 
   const usedWords = new Set([
     ...flattenBuckets(seed.dailyBuckets),
@@ -37,7 +53,7 @@ async function main() {
   const suggestionsByCluster = {}
 
   for (const [word, entry] of Object.entries(vectors)) {
-    if (!dictionary.has(word) || usedWords.has(word)) {
+    if (!dictionary.entries.has(word) || usedWords.has(word)) {
       continue
     }
 
@@ -54,7 +70,7 @@ async function main() {
 
   const payload = {
     generatedAt: new Date().toISOString(),
-    dictionaryPath,
+    dictionaryPath: dictionary.source,
     suggestionCount: Object.values(suggestionsByCluster).reduce(
       (count, words) => count + words.length,
       0,
