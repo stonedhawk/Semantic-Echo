@@ -24,6 +24,16 @@ export function createJsonResponse(payload, status = 200) {
   })
 }
 
+export function createHtmlResponse(payload, status = 200) {
+  return new Response(payload, {
+    status,
+    headers: {
+      'cache-control': 'no-store',
+      'content-type': 'text/html; charset=utf-8',
+    },
+  })
+}
+
 export function createOptionsResponse() {
   return new Response(null, {
     status: 204,

@@ -120,6 +120,9 @@ The repo now includes Vercel-ready API routes in `api/` for:
 - `/api/catalog.json`
 - `/api/catalog-suggestions.json`
 - `/api/health`
+- `/api/admin`
+- `/api/admin/state`
+- `/api/admin/promote`
 
 On Vercel, the frontend build switches to `/` automatically, while GitHub Pages still uses `/Semantic-Echo/`.
 If you want to override the default live catalog, set `VITE_WORD_CATALOG_URL` in the frontend build, for example:
@@ -127,6 +130,24 @@ If you want to override the default live catalog, set `VITE_WORD_CATALOG_URL` in
 ```bash
 VITE_WORD_CATALOG_URL=https://semantic-echo-catalog.vercel.app/api/catalog.json
 ```
+
+For the protected admin UI, add these Vercel environment variables:
+
+```bash
+CATALOG_ADMIN_SECRET=choose-a-strong-secret
+CATALOG_GITHUB_TOKEN=github-token-with-contents-write
+CATALOG_GITHUB_REPO_OWNER=stonedhawk
+CATALOG_GITHUB_REPO_NAME=Semantic-Echo
+CATALOG_GITHUB_REPO_BRANCH=main
+```
+
+The admin UI lives at:
+
+```text
+https://semantic-echo-catalog.vercel.app/api/admin
+```
+
+It unlocks with `CATALOG_ADMIN_SECRET`, reads the current seed from GitHub, shows the live suggestion queue, and can promote a word directly into the seed with a GitHub commit.
 
 ## Deploying
 
