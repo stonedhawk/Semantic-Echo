@@ -11,7 +11,7 @@ export const suggestionsPath = path.join(
   'server/data/wordCatalogSuggestions.json',
 )
 
-export function createJsonResponse(payload: unknown, status = 200) {
+export function createJsonResponse(payload, status = 200) {
   return new Response(JSON.stringify(payload, null, 2), {
     status,
     headers: {
@@ -35,6 +35,6 @@ export function createOptionsResponse() {
   })
 }
 
-export async function readJsonFile<T>(targetPath: string) {
-  return JSON.parse(await readFile(targetPath, 'utf8')) as T
+export async function readJsonFile(targetPath) {
+  return JSON.parse(await readFile(targetPath, 'utf8'))
 }
