@@ -4,7 +4,7 @@ import {
   buildGraphifySeries,
   type TrajectoryAnalytics,
 } from '../features/trajectory/graphify'
-import type { HintPayload } from '../lib/vectorTypes'
+import type { CatalogSource, HintPayload } from '../lib/vectorTypes'
 
 export type GuessRecord = {
   word: string
@@ -37,6 +37,7 @@ export type GameState = PersistedGameState & {
   datasetWordCount: number
   playableWordCount: number
   catalogVersion: string | null
+  catalogSource: CatalogSource | null
   targetResolved: boolean
   errorMessage: string | null
 }
@@ -63,6 +64,7 @@ const initialState: GameState = {
   datasetWordCount: 0,
   playableWordCount: 0,
   catalogVersion: null,
+  catalogSource: null,
   targetResolved: false,
   errorMessage: null,
 }
@@ -163,12 +165,14 @@ const gameSlice = createSlice({
         wordCount: number
         playableWordCount: number
         catalogVersion: string
+        catalogSource: CatalogSource
       }>,
     ) {
       state.workerReady = true
       state.datasetWordCount = action.payload.wordCount
       state.playableWordCount = action.payload.playableWordCount
       state.catalogVersion = action.payload.catalogVersion
+      state.catalogSource = action.payload.catalogSource
       state.errorMessage = null
     },
     setTargetResolved(state) {

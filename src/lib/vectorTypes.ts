@@ -12,6 +12,8 @@ export type WordCatalog = {
   practiceWords: string[]
 }
 
+export type CatalogSource = 'remote' | 'local' | 'embedded-fallback'
+
 export type DailyTarget = {
   puzzleId: string
   puzzleNumber: number
@@ -30,7 +32,8 @@ export type WorkerRequest =
       type: 'initDataset'
       requestId: string
       datasetUrl: string
-      catalogUrl?: string
+      localCatalogUrl?: string
+      remoteCatalogUrl?: string
     }
   | {
       type: 'resolveDailyTarget'
@@ -66,6 +69,7 @@ export type WorkerResponse =
       wordCount: number
       playableWordCount: number
       catalogVersion: string
+      catalogSource: CatalogSource
     }
   | {
       type: 'targetResolved'

@@ -70,11 +70,16 @@ export class VectorWorkerClient {
     })
   }
 
-  async init(datasetUrl: string, catalogUrl?: string) {
+  async init(
+    datasetUrl: string,
+    localCatalogUrl?: string,
+    remoteCatalogUrl?: string,
+  ) {
     const response = await this.dispatch({
       type: 'initDataset',
       datasetUrl,
-      catalogUrl,
+      localCatalogUrl,
+      remoteCatalogUrl,
     } satisfies Omit<InitRequest, 'requestId'>)
 
     if (response.type === 'error') {
@@ -89,6 +94,7 @@ export class VectorWorkerClient {
       wordCount: response.wordCount,
       playableWordCount: response.playableWordCount,
       catalogVersion: response.catalogVersion,
+      catalogSource: response.catalogSource,
     }
   }
 
