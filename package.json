@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "prebuild": "npm run catalog:build",
+    "prebuild": "npm run catalog:refresh",
     "build": "tsc -b && vite build",
     "catalog:build": "node scripts/build-word-catalog.mjs",
     "catalog:suggest": "node scripts/build-catalog-suggestions.mjs",
