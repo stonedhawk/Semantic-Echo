@@ -10,6 +10,7 @@
     "catalog:build": "node scripts/build-word-catalog.mjs",
     "catalog:suggest": "node scripts/build-catalog-suggestions.mjs",
     "catalog:refresh": "npm run catalog:build && npm run catalog:suggest",
+    "catalog:promote": "node scripts/promote-catalog-suggestion.mjs",
     "catalog:serve": "node server/catalog-server.mjs",
     "lint": "eslint .",
     "preview": "vite preview",

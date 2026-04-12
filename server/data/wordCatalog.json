@@ -1,5 +1,5 @@
 {
-  "version": "catalog-seed-v2",
+  "version": "catalog-seed-v2-rev2026-04-12",
   "updatedAt": "2026-04-12",
   "dailyWords": [
     "forest",
@@ -79,6 +79,7 @@
     "meadow",
     "field",
     "branch",
+    "stone",
     "otter",
     "tiger",
     "horse",
