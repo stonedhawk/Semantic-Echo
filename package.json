@@ -17,6 +17,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@rahulmrx/game-ready-dictionary": "^1.0.8",
     "@reduxjs/toolkit": "^2.11.2",
     "@tailwindcss/vite": "^4.2.2",
     "lucide-react": "^1.8.0",
