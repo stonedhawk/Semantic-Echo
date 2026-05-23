@@ -1,8 +1,11 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { createRequire } from 'node:module'
 import { TrieEngine } from '@rahulmrx/game-ready-dictionary'
-import trieData from '@rahulmrx/game-ready-dictionary/data' with { type: 'json' }
+
+const require = createRequire(import.meta.url)
+const trieData = require('@rahulmrx/game-ready-dictionary/data')
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.resolve(__dirname, '..')
