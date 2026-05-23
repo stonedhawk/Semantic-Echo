@@ -29,6 +29,11 @@ import { readPersistedState } from './store/listeners'
 import type { RootState } from './store/store'
 import { store } from './store/store'
 import { VectorWorkerClient } from './workers/vectorWorkerClient'
+import { TrieEngine } from '@rahulmrx/game-ready-dictionary'
+import trieData from '@rahulmrx/game-ready-dictionary/data'
+
+const trieEngine = new TrieEngine(trieData)
+
 
 function SemanticEchoApp() {
   const dispatch = useDispatch<typeof store.dispatch>()
@@ -160,7 +165,10 @@ function SemanticEchoApp() {
       return
     }
 
-    if (game.status === 'scoring' || !game.targetResolved) {
+    // Pre-flight validation using high-performance TrieEngine
+    const isEnglishWord = trieEngine.validate(guess)
+    if (!isEnglishWord) {
+      dispatch(markGuessRejected(`"${guess}" is not a valid English word! Check your spelling.`))
       return
     }
 
@@ -187,7 +195,11 @@ function SemanticEchoApp() {
       )
     } catch (error) {
       if (error instanceof Error && error.name === 'unknown_word') {
-        dispatch(markGuessRejected(error.message))
+        dispatch(
+          markGuessRejected(
+            `"${guess}" is a valid word, but too obscure or missing semantic data! Try a different synonym.`,
+          ),
+        )
         return
       }
 
