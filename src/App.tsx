@@ -8,6 +8,7 @@ import { GuessList } from './components/GuessList'
 import { TopBar } from './components/TopBar'
 import { TrajectoryHUD } from './components/TrajectoryHUD'
 import { useGlobalKeyboard } from './hooks/useGlobalKeyboard'
+import { WinParticles } from './components/WinParticles'
 import { getRemoteCatalogUrl } from './lib/catalogSource'
 import { getDailyPuzzleContext } from './lib/dailySeed'
 import {
@@ -39,6 +40,21 @@ function SemanticEchoApp() {
   const dispatch = useDispatch<typeof store.dispatch>()
   const game = useSelector((state: RootState) => state.game)
   const workerRef = useRef<VectorWorkerClient | null>(null)
+
+  // Dynamic Ambient Glow shifting engine
+  useEffect(() => {
+    const bestScore = game.guesses.length > 0 ? Math.max(...game.guesses.map((g) => g.score)) : 0
+    let color = 'rgba(95, 150, 255, 0.18)' // Deep Ice Blue glow default
+    if (bestScore >= 90) {
+      color = 'rgba(180, 35, 24, 0.28)' // Scorching Crimson Ember pulse
+    } else if (bestScore >= 75) {
+      color = 'rgba(255, 140, 105, 0.24)' // Warm glowing Orange
+    } else if (bestScore >= 55) {
+      color = 'rgba(205, 214, 224, 0.16)' // Mild warm grey glow
+    }
+    document.documentElement.style.setProperty('--bg-glow-color', color)
+  }, [game.guesses])
+
 
   function createPracticeKey(practiceRound: number) {
     const randomPart =
@@ -265,6 +281,7 @@ function SemanticEchoApp() {
 
   return (
     <main className="app-shell">
+      <WinParticles active={game.won} />
       <TopBar
         mode={game.mode}
         puzzleNumber={game.puzzleNumber}

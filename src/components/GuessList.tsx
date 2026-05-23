@@ -47,7 +47,11 @@ export function GuessList({ guesses, invalidGuess }: GuessListProps) {
                   </p>
                 </div>
                 <div className="guess-row__score">
-                  {guess.score >= 75 ? <Flame size={16} /> : <Snowflake size={16} />}
+                  {guess.score >= 75 ? (
+                    <Flame size={16} className="icon-pulse-hot" />
+                  ) : (
+                    <Snowflake size={16} className="icon-spin-cold" />
+                  )}
                   <span>{guess.score}</span>
                 </div>
               </div>
