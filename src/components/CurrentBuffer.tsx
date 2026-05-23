@@ -44,7 +44,21 @@ export function CurrentBuffer({
       </div>
 
       <div className="buffer-word" aria-live="polite">
-        {completed ? 'round locked - restart or advance' : value || 'type anywhere to begin'}
+        {completed ? (
+          <span className="buffer-word__status" style={{ opacity: 0.6, fontSize: '1.25rem', letterSpacing: 'normal' }}>
+            round locked - restart or advance
+          </span>
+        ) : value ? (
+          value.split('').map((char, index) => (
+            <span key={`${char}-${index}`} className="buffer-letter">
+              {char}
+            </span>
+          ))
+        ) : (
+          <span className="buffer-word__placeholder" style={{ opacity: 0.45, letterSpacing: 'normal', fontSize: '1.4rem' }}>
+            type anywhere to begin
+          </span>
+        )}
       </div>
 
       <p className="buffer-hint">
